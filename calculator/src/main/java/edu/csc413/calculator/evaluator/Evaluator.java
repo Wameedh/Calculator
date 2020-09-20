@@ -8,17 +8,31 @@ import edu.csc413.calculator.operators.*;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+
 public class Evaluator {
 
   private Stack<Operand> operandStack;
   private Stack<Operator> operatorStack;
   private StringTokenizer expressionTokenizer;
-  private final String delimiters = " +/*-^";
+  private final String delimiters = " +/*-^()";
 
   public Evaluator() {
     operandStack = new Stack<>();
     operatorStack = new Stack<>();
   }
+
+
+  public void processStack() {
+        Operator operatorFromStack = operatorStack.pop();
+        Operand operandTwo = operandStack.pop();
+        Operand operandOne = operandStack.pop();
+        Operand result = operatorFromStack.execute(operandOne, operandTwo);
+        operandStack.push(result);
+
+  }
+
+
+
 
   public int evaluateExpression(String expression ) throws InvalidTokenException {
     String expressionToken;
@@ -26,46 +40,56 @@ public class Evaluator {
     // The 3rd argument is true to indicate that the delimiters should be used
     // as tokens, too. But, we'll need to remember to filter out spaces.
     this.expressionTokenizer = new StringTokenizer( expression, this.delimiters, true );
-
     // initialize operator stack - necessary with operator priority schema
     // the priority of any operator in the operator stack other than
     // the usual mathematical operators - "+-*/" - should be less than the priority
     // of the usual operators
 
-
-
     while ( this.expressionTokenizer.hasMoreTokens() ) {
       // filter out spaces
       if ( !( expressionToken = this.expressionTokenizer.nextToken() ).equals( " " )) {
         // check if token is an operand
+
         if ( Operand.check( expressionToken )) {
           operandStack.push( new Operand( expressionToken ));
         } else {
-          if ( ! Operator.check( expressionToken )) {
-            throw new InvalidTokenException(expressionToken);
+                      if ( ! Operator.check( expressionToken )) {
+                        throw new InvalidTokenException(expressionToken);
+                      }
+
+          // Check whether the expressionToken is a left parenthesis
+          if ("(".equals(expressionToken)) {
+            operatorStack.push(Operator.getOperator("("));
+            continue;
           }
-
-
-          // TODO Operator is abstract - these two lines will need to be fixed:
-          // The Operator class should contain an instance of a HashMap,
-          // and values will be instances of the Operators.  See Operator class
-          // skeleton for an example.
-          Operator newOperator = new Operator();
-        
-          while (operatorStack.peek().priority() >= newOperator.priority() ) {
-            // note that when we eval the expression 1 - 2 we will
-            // push the 1 then the 2 and then do the subtraction operation
-            // This means that the first number to be popped is the
-            // second operand, not the first operand - see the following code
-            Operator operatorFromStack = operatorStack.pop();
-            Operand operandTwo = operandStack.pop();
-            Operand operandOne = operandStack.pop();
-            Operand result = operatorFromStack.execute( operandOne, operandTwo );
-            operandStack.push( result );
+          // Check whether the expressionToken is the right parenthesis
+          if (")".equals(expressionToken)) {
+            // Execute expression if you close parentheses
+            while (operatorStack.peek().priority() >= 1){
+              processStack();
+            }
+            operatorStack.pop(); // pop the left parenthesis
+            continue;
           }
+                      // TODO Operator is abstract - these two lines will need to be fixed:
+                      // The Operator class should contain an instance of a HashMap,
+                      // and values will be instances of the Operators.  See Operator class
+                      // skeleton for an example.
+                      Operator newOperator = Operator.getOperator(expressionToken);
 
-          operatorStack.push( newOperator );
-        }
+                          while (!operatorStack.isEmpty() && operatorStack.peek().priority() >= newOperator.priority()) {
+                            // note that when we eval the expression 1 - 2 we will
+                            // push the 1 then the 2 and then do the subtraction operation
+                            // This means that the first number to be popped is the
+                            // second operand, not the first operand - see the following code
+
+                            processStack();
+                          }
+
+                         operatorStack.push(newOperator);
+
+
+                    }
       }
     }
 
@@ -79,6 +103,18 @@ public class Evaluator {
     // that is, we should keep evaluating the operator stack until it is empty;
     // Suggestion: create a method that processes the operator stack until empty.
 
-    return 0;
+
+    while (!(operatorStack.isEmpty())){ // Evaluate until the operatorStack is empty
+      Operator operatorFromStack = operatorStack.pop();
+      Operand operandTwo = operandStack.pop();
+      Operand operandOne = operandStack.pop();
+
+      Operand result = operatorFromStack.execute(operandOne, operandTwo);
+      operandStack.push(result);
+    }
+
+    int result = operandStack.pop().getValue(); // the operandStack Eventually will have the result on top of it
+    return result;
+
   }
 }

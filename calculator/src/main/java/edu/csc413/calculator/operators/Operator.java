@@ -1,6 +1,7 @@
 package edu.csc413.calculator.operators;
 
 import edu.csc413.calculator.evaluator.Operand;
+import java.util.HashMap;
 
 public abstract class Operator {
     // The Operator class should contain an instance of a HashMap
@@ -13,6 +14,18 @@ public abstract class Operator {
     // HashMap operators = new HashMap();
     // operators.put( "+", new AdditionOperator() );
     // operators.put( "-", new SubtractionOperator() );
+
+    public static HashMap<String, Operator> operators = new HashMap<>();
+    static {
+        Operator.operators.put( "+", new AddOperator());
+        Operator.operators.put( "-", new SubtractOperator());
+        Operator.operators.put( "*", new MultiplyOperator());
+        Operator.operators.put( "/", new DivideOperator());
+        Operator.operators.put( "^", new PowerOperator());
+        Operator.operators.put( "(", new LeftParenthesis());
+        Operator.operators.put( ")", new RightParenthesis());
+
+    }
 
     /**
      * retrieve the priority of an Operator
@@ -37,17 +50,22 @@ public abstract class Operator {
      * @return reference to a Operator instance.
      */
     public static Operator getOperator(String token) {
-        return null;
+
+        if (operators.containsKey(token)) {
+            return operators.get(token);
+        } else {
+            return null;
+        }
     }
 
-    
-     /**
+
+    /**
      * determines if a given token is a valid operator.
      * please do your best to avoid static checks
      * for example token.equals("+") and so on.
      * Think about what happens if we add more operators.
      */
     public static boolean check(String token) {
-        return false;
+        return operators.containsKey(token);
     }
 }
