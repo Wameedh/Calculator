@@ -1,5 +1,5 @@
 package edu.csc413.calculator.evaluator;
-
+import edu.csc413.calculator.exceptions.InvalidTokenException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -35,7 +35,7 @@ public class EvaluatorUI extends JFrame implements ActionListener {
 
         add(expressionTextField, BorderLayout.NORTH);
         expressionTextField.setEditable(false);
-
+        expressionTextField.setBackground(Color.white);
         add(buttonPanel, BorderLayout.CENTER);
         buttonPanel.setLayout(new GridLayout(5, 4));
 
@@ -72,6 +72,59 @@ public class EvaluatorUI extends JFrame implements ActionListener {
      */
     public void actionPerformed(ActionEvent actionEventObject) {
 
+        Evaluator evaluator = new Evaluator();
+        int result = 0;
+
+        if (actionEventObject.getSource() == buttons[0]) {
+            expressionTextField.setText(expressionTextField.getText() + "7");
+        } else if (actionEventObject.getSource() == buttons[1]) {
+            expressionTextField.setText(expressionTextField.getText() + "8");
+        } else if (actionEventObject.getSource() == buttons[2]) {
+            expressionTextField.setText(expressionTextField.getText() + "9");
+        } else if (actionEventObject.getSource() == buttons[3]) {
+            expressionTextField.setText(expressionTextField.getText() + "+");
+        } else if (actionEventObject.getSource() == buttons[4]) {
+            expressionTextField.setText(expressionTextField.getText() + "4");
+        } else if (actionEventObject.getSource() == buttons[5]) {
+            expressionTextField.setText(expressionTextField.getText() + "5");
+        } else if (actionEventObject.getSource() == buttons[6]) {
+            expressionTextField.setText(expressionTextField.getText() + "6");
+        } else if (actionEventObject.getSource() == buttons[7]) {
+            expressionTextField.setText(expressionTextField.getText() + "-");
+        } else if (actionEventObject.getSource() == buttons[8]) {
+            expressionTextField.setText(expressionTextField.getText() + "1");
+        } else if (actionEventObject.getSource() == buttons[9]) {
+            expressionTextField.setText(expressionTextField.getText() + "2");
+        } else if (actionEventObject.getSource() == buttons[10]) {
+            expressionTextField.setText(expressionTextField.getText() + "3");
+        } else if (actionEventObject.getSource() == buttons[11]) {
+            expressionTextField.setText(expressionTextField.getText() + "*");
+        } else if (actionEventObject.getSource() == buttons[12]) {
+            expressionTextField.setText(expressionTextField.getText() + "0");
+        } else if (actionEventObject.getSource() == buttons[13]) {
+            expressionTextField.setText(expressionTextField.getText() + "^");
+        } else if (actionEventObject.getSource() == buttons[14]) {
+            try {
+                result = evaluator.evaluateExpression(expressionTextField.getText());
+            } catch (InvalidTokenException e) {
+                e.printStackTrace();
+            }
+            expressionTextField.setText("");
+            expressionTextField.setText(expressionTextField.getText() + result);
+        } else if (actionEventObject.getSource() == buttons[15]) {
+            expressionTextField.setText(expressionTextField.getText() + "/");
+        } else if (actionEventObject.getSource() == buttons[16]) {
+            expressionTextField.setText(expressionTextField.getText() + "(");
+        } else if (actionEventObject.getSource() == buttons[17]) {
+            expressionTextField.setText(expressionTextField.getText() + ")");
+        } else if (actionEventObject.getSource() == buttons[18]) {
+            expressionTextField.setText("");
+        } else if (actionEventObject.getSource() == buttons[19]) {
+            String expression = expressionTextField.getText();
+            String subExpression = expression.substring(0, expression.length() - 1);
+            expressionTextField.setText(subExpression);
+        }
 
     }
 }
+
